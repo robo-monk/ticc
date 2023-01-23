@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 const int BOXES_LEN = 9;
 
@@ -32,6 +33,32 @@ struct GameState init_game() {
   return game;
 }
 
+bool can_play_at(int i, struct GameState *game) {
+  // printf("check if can play at %d", i);
+
+  bool is_in_range = i >= 0 && i <= 9;
+  if (!is_in_range) return false;
+
+  bool is_box_empty = (game->boxes)[i] == EMPTY;
+
+  return is_box_empty;
+}
+
+int ask_for_index(struct GameState *game) {
+  int i = -1;
+  bool accepted = false;
+
+  while (!accepted) {
+    printf("enter index pos to play: ");
+    scanf("%d", &i);
+
+    accepted = can_play_at(i, game);
+    if (!accepted) printf("\n please enter a valid square \n");
+  }
+
+  return i;
+}
+
 void play(struct GameState *game, int index) {
   enum BoxState new_box = derive_next_box_state(game);
   printf("placing at %d (turn: %c) \n\n", index, new_box == 1 ? 'x' : 'o');
@@ -59,13 +86,13 @@ int main() {
   printf("starting tic tac toe super engine \n\n");
 
   struct GameState game = init_game();
+  render(&game);
 
-  play(&game, 0);
-  render(&game);
-  play(&game, 3);
-  render(&game);
-  play(&game, 4);
-  render(&game);
+  while (true) {
+    int i = ask_for_index(&game);
+    play(&game, i);
+    render(&game);
+  }
 
   return 0;
 }
