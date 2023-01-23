@@ -46,7 +46,7 @@ bool can_play_at(int i, struct GameState *game) {
 
 bool has_empty_squares(struct GameState *game) {
   for (int i = 0; i < BOXES_LEN; i++) {
-    if ((game->boxes)[i] != EMPTY) return true;
+    if ((game->boxes)[i] == EMPTY) return true;
   }
   return false;
 }
@@ -65,7 +65,7 @@ enum BoxState is_game_won(struct GameState *game) {
   };
 
   int turn = 1;
-  for (turn = 1; turn < 2; turn += 1) {
+  for (turn = 1; turn <= 2; turn += 1) {
     int i;
     for (i = 0; i < 8; i += 1) {
       bool won = true;
