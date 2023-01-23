@@ -44,6 +44,53 @@ bool can_play_at(int i, struct GameState *game) {
   return is_box_empty;
 }
 
+bool has_empty_squares(struct GameState *game) {
+  for (int i = 0; i < BOXES_LEN; i++) {
+    if ((game->boxes)[i] != EMPTY) return true;
+  }
+  return false;
+}
+enum BoxState is_game_won(struct GameState *game) {
+  const int win_combinations[8][3] = {
+    { 0, 1, 2 },
+    { 3, 4, 5 },
+    { 6, 7, 8 },
+
+    { 0, 3, 6 },
+    { 1, 4, 7 },
+    { 2, 5, 8 },
+
+    { 0, 4, 8 },
+    { 2, 4, 6 }
+  };
+
+  int turn = 1;
+  for (turn = 1; turn < 2; turn += 1) {
+    int i;
+    for (i = 0; i < 8; i += 1) {
+      bool won = true;
+
+      int ii;
+      for (ii = 0; ii < 3; ii +=1) {
+        int index = win_combinations[i][ii];
+        if ((game->boxes)[index] != turn){
+          won = false;
+          break;
+        }
+      }
+
+      if (won) {
+        printf("%d WINS", turn);
+        won = true;
+        return turn;
+      }
+    }
+
+  }
+
+  return 0;
+}
+
 int ask_for_index(struct GameState *game) {
   int i = -1;
   bool accepted = false;
@@ -82,16 +129,22 @@ void render(struct GameState *game) {
   }
 };
 
+
 int main() {
   printf("starting tic tac toe super engine \n\n");
 
   struct GameState game = init_game();
   render(&game);
 
-  while (true) {
+  bool is_over = false;
+
+  while (!is_over) {
     int i = ask_for_index(&game);
     play(&game, i);
     render(&game);
+    
+    int winner = is_game_won(&game);
+    is_over = !has_empty_squares(&game) || winner != 0;
   }
 
   return 0;
